@@ -1,0 +1,38 @@
+{
+    "folders": [
+        {
+            "path": "."
+        }
+    ],
+    "settings": {
+        "workbench.startupEditor": "readme",
+        "javascript.preferences.quoteStyle": "single",
+        "typescript.preferences.quoteStyle": "single",
+        "editor.formatOnSave": true,
+        "files.exclude": {
+            "**/.git": true,
+            "**/.next": true,
+            "**/node_modules": true,
+            "**/.DS_Store": true
+        },
+        "search.exclude": {
+            "**/node_modules": true,
+            "**/.next": true
+        },
+        "typescript.tsdk": "node_modules/typescript/lib",
+        "typescript.enablePromptUseWorkspaceTsdk": true,
+        "eslint.nodePath": ".yarn/sdks"
+    },
+    "extensions": {
+        "recommendations": [
+            "esbenp.prettier-vscode",
+            "dbaeumer.vscode-eslint",
+            "bradlc.vscode-tailwindcss",
+            "styled-components.vscode-styled-components",
+            "eamodio.gitlens",
+            "christian-kohler.npm-intellisense",
+            "vitest.explorer",
+            "ms-vscode-remote.remote-wsl"
+        ]
+    }
+}
