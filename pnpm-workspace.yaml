@@ -1,0 +1,11 @@
+ignoredBuiltDependencies:
+  - sharp
+  - unrs-resolver
+
+packages:
+  # Include all apps (like your store-status-app)
+  - 'apps/*'
+  # Include all shared libraries or components
+  - 'packages/*'
+  # Exclude test directories from being treated as packages
+  - '!**/test/**'
