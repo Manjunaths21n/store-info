@@ -6,24 +6,29 @@ import {
   getStatus, WEEKLY_HOURS, DAY_NAMES, STORE_NAME, STORE_TAGLINE,
   formatTime, STORE_ADDRESS, STORE_PHONE
 } from "./_utils/index";
+import { fetchDBStoreConfig } from './_utils/api-utils';
 
-// ─── Component ────────────────────────────────────────────────────────────────
 export default function Home() {
   const [status, setStatus] = useState(getStatus());
-  const [tick, setTick] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [storeConfig, setStoreConfig] = useState(null);
+
 
   useEffect(() => {
-    setMounted(true);
-    const interval = setInterval(() => {
-      setStatus(getStatus());
-      setTick((t) => !t);
-    }, 30000);
-    return () => clearInterval(interval);
-  }, []);
+    fetchDBStoreConfig().then((config) => {
+        setStoreConfig(config); 
+        console.log(config); // name, hours, address etc.
+        setMounted(true);
+    });
 
+    const interval = setInterval(() => {
+        setStatus(getStatus());
+    }, 30000);
+
+    return () => clearInterval(interval);
+}, []);
   const now = new Date();
-  const todayHours = WEEKLY_HOURS[now.getDay()];
+  // const todayHours = WEEKLY_HOURS[now.getDay()];
 
   return (
     <>
@@ -66,7 +71,7 @@ export default function Home() {
                     <span className="dot closed" />
                     Closed
                   </div>
-                  <div className="status-headline closed">We're\nClosed.</div>
+                  <div className="status-headline closed">{`We're\nClosed.`}</div>
                   <p className="status-sub">
                     {status.opensToday
                       ? <>We open today at <strong>{status.opensToday}</strong>. See you soon!</>
