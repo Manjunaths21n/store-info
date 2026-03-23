@@ -1,29 +1,37 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import "./page.css";
 import {
   getStatus, WEEKLY_HOURS, DAY_NAMES, STORE_NAME, STORE_TAGLINE,
-  formatTime, STORE_ADDRESS, STORE_PHONE
+  formatTime, STORE_ADDRESS, STORE_PHONE, IGetStatusResponse
 } from "./_utils/index";
 
-// ─── Component ────────────────────────────────────────────────────────────────
 export default function Home() {
-  const [status, setStatus] = useState(getStatus());
-  const [tick, setTick] = useState(false);
+  const [status, setStatus] = useState<IGetStatusResponse>({isOpen:false, closesAt:"", timeLeft:"", opensToday:"", nextInfo:null});
   const [mounted, setMounted] = useState(false);
 
-  useEffect(() => {
-    setMounted(true);
-    const interval = setInterval(() => {
-      setStatus(getStatus());
-      setTick((t) => !t);
-    }, 30000);
-    return () => clearInterval(interval);
-  }, []);
+  const setStoreStatus = useCallback(async () => {
+    const storeStatus = await getStatus();
+    setStatus(storeStatus);
+  },[])
+
+useEffect(() => {
+    async function fetchData() {
+      setMounted(true);
+      await setStoreStatus();
+
+        const interval = setInterval(async () => {
+            await setStoreStatus();
+        }, 30000);
+
+        return () => clearInterval(interval);
+    }
+    fetchData();
+}, []);
 
   const now = new Date();
-  const todayHours = WEEKLY_HOURS[now.getDay()];
+  // const todayHours = WEEKLY_HOURS[now.getDay()];
 
   return (
     <>
@@ -66,7 +74,7 @@ export default function Home() {
                     <span className="dot closed" />
                     Closed
                   </div>
-                  <div className="status-headline closed">We're\nClosed.</div>
+                  <div className="status-headline closed">{`We're\nClosed.`}</div>
                   <p className="status-sub">
                     {status.opensToday
                       ? <>We open today at <strong>{status.opensToday}</strong>. See you soon!</>
