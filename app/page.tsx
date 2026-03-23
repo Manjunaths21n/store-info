@@ -1,32 +1,35 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import "./page.css";
 import {
   getStatus, WEEKLY_HOURS, DAY_NAMES, STORE_NAME, STORE_TAGLINE,
-  formatTime, STORE_ADDRESS, STORE_PHONE
+  formatTime, STORE_ADDRESS, STORE_PHONE, IGetStatusResponse
 } from "./_utils/index";
-import { fetchDBStoreConfig } from './_utils/api-utils';
 
 export default function Home() {
-  const [status, setStatus] = useState(getStatus());
+  const [status, setStatus] = useState<IGetStatusResponse>({isOpen:false, closesAt:"", timeLeft:"", opensToday:"", nextInfo:null});
   const [mounted, setMounted] = useState(false);
-  const [storeConfig, setStoreConfig] = useState(null);
 
+  const setStoreStatus = useCallback(async () => {
+    const storeStatus = await getStatus();
+    setStatus(storeStatus);
+  },[])
 
-  useEffect(() => {
-    fetchDBStoreConfig().then((config) => {
-        setStoreConfig(config); 
-        console.log(config); // name, hours, address etc.
-        setMounted(true);
-    });
+useEffect(() => {
+    async function fetchData() {
+      setMounted(true);
+      await setStoreStatus();
 
-    const interval = setInterval(() => {
-        setStatus(getStatus());
-    }, 30000);
+        const interval = setInterval(async () => {
+            await setStoreStatus();
+        }, 30000);
 
-    return () => clearInterval(interval);
+        return () => clearInterval(interval);
+    }
+    fetchData();
 }, []);
+
   const now = new Date();
   // const todayHours = WEEKLY_HOURS[now.getDay()];
 

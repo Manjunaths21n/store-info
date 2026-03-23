@@ -54,11 +54,40 @@ export async function GET() {
         );
     }
 }
+// export async function PUT(req: Request) {
+//     const body = await req.json();
+//     const updated = await db.storeInfoStatus.update({
+//         where: { id: body.id },
+//         data: { status: body.status },
+//     });
+//     return NextResponse.json(updated);
+// }
+
+
+
 export async function PUT(req: Request) {
-    const body = await req.json();
-    const updated = await db.storeInfoStatus.update({
-        where: { id: body.id },
-        data: { status: body.status },
-    });
-    return NextResponse.json(updated);
+    try {
+        const body = await req.json();
+
+        // Find existing record first
+        const existing = await db.storeInfoStatus.findFirst();
+
+        if (!existing) {
+            // Create if doesn't exist
+            const created = await db.storeInfoStatus.create({
+                data: { status: body.status }
+            });
+            return NextResponse.json(created);
+        }
+
+        // Update existing record
+        const updated = await db.storeInfoStatus.update({
+            where: { id: existing.id },  // ← use id from DB, not from body
+            data: { status: body.status },
+        });
+        return NextResponse.json(updated);
+    } catch (error) {
+        console.error('PUT Error:', error);
+        return NextResponse.json({ error: String(error) }, { status: 500 });
+    }
 }

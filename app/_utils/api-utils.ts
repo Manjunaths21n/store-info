@@ -12,3 +12,13 @@ export async function fetchDBStoreConfig() {
     }
     return res.json();
 }
+
+export async function updateStoreStatus(status: boolean) {
+    const res = await fetch('/api/store', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status }),
+    });
+    if (!res.ok) throw new Error('Failed to update store status');
+    return res.json();
+}
